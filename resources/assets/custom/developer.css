@@ -154,3 +154,17 @@ a.grid_item .info {
   overflow: hidden;
   margin-top: 15px;
 }
+.select2-container--default .select2-selection--single{
+    border: 1px solid #d2d6de;
+    border-radius: 0;
+}
+.select2-container .select2-selection--single{
+    height: 34px;
+}
+.select2-container .select2-selection--single .select2-selection__rendered{
+    padding-left: 0;
+}
+.select2-container{
+    display: block;
+    width: 100% !important;
+}

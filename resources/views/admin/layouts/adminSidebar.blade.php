@@ -21,6 +21,30 @@
         </a>
       </li>
 
+      <li class="@if(Request::is('admin/countries') ||Request::is('admin/countries/*') ) active @endif treeview">
+        <a href="{{url('admin/countries')}}">
+          <i class="fa fa-globe"></i> <span>Country/State/City</span>
+        </a>
+      </li>
+
+      <li class="@if(Request::is('admin/categories') ||Request::is('admin/categories/*') ) active @endif treeview">
+        <a href="{{url('admin/categories')}}">
+          <i class="fa fa-globe"></i> <span>Categories</span>
+        </a>
+      </li>
+
+      <li class="@if(Request::is('admin/sub-categories') ||Request::is('admin/sub-categories/*') ) active @endif treeview">
+        <a href="{{url('admin/sub-categories')}}">
+          <i class="fa fa-globe"></i> <span>Sub Categories</span>
+        </a>
+      </li>
+
+      <li class="@if(Request::is('admin/products') ||Request::is('admin/products/*') ) active @endif treeview">
+        <a href="{{url('admin/products')}}">
+          <i class="fa fa-globe"></i> <span>Products</span>
+        </a>
+      </li>
+
     </ul>
   </section>
   <!-- /.sidebar -->

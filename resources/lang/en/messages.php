@@ -51,4 +51,14 @@ return [
         'reqState' => 'Please enter state.',
         'reqCity' => 'Please select city.'
     ],
+    'country_state_city' => [
+        'shortCode' => 'Please enter Short Code.',
+        'countryName' => 'Please enter Country Name.',
+        'phoneCode' => 'Please enter Phonecode.',
+        'country' => 'Please select a Country.',
+        'stateName' => 'Please enter State Name.',
+        'cityCountry' => 'Please select a Country.',
+        'cityState' => 'Please select a State.',
+        'cityName' => 'Please enter City Name.',
+    ],
 ];

@@ -36,6 +36,9 @@ Route::group(['middleware' => ['web']], function ()
     //common front pages and CMS pages
     Route::get('/home', 'HomeController@index');
 
+    Route::post('/getCountry', 'CountryController@getCountry');
+    Route::post('/getState', 'CountryController@getState');
+    Route::post('/getCity', 'CountryController@getCities');
 
     Route::group(['middleware' => ['auth']], function()
     {
@@ -53,6 +56,36 @@ Route::group(['middleware' => ['web']], function ()
             Route::get('/users/view/{id}', 'UserController@view');
             Route::post('/users/update', 'UserController@update');
             Route::get('/users/delete/{id}', 'UserController@destroy');
+
+            //Country/State/city
+            Route::resource('/countries', 'CountryController');
+            Route::get('/ajaxCountry', 'CountryController@ajaxCountry');
+            Route::get('/country/delete/{id}', 'CountryController@destroy');
+
+            Route::get('/ajaxState/{id}', 'CountryController@ajaxState');
+            Route::post('/state/new', 'CountryController@storeState');
+            Route::get('/state/{id}/edit', 'CountryController@editState');
+            Route::post('/state/update', 'CountryController@updateState');
+            Route::get('/state/view/{id}', 'CountryController@getCity');
+            Route::get('/state/delete/{id}', 'CountryController@deleteState');
+
+            Route::get('/ajaxCity/{id}', 'CountryController@ajaxCity');
+            Route::get('/city/delete/{id}', 'CountryController@deleteCity');
+            Route::post('/city/new', 'CountryController@storeCity');
+
+            //Category
+            Route::resource('/categories', 'CategoryController');
+            Route::get('/categories/delete/{id}', 'CategoryController@destroy');
+
+            //Sub Category
+            Route::resource('/sub-categories', 'SubCategoryController');
+            Route::get('/sub-categories/delete/{id}', 'SubCategoryController@destroy');
+
+            //Product
+            Route::resource('/products', 'ProductController');
+            Route::get('/products/delete/{id}', 'ProductController@destroy');
+            Route::get('/product', 'ProductController@productList');
+            Route::post('/product-ajax-data', 'ProductController@productAjaxData');
         });
     });
 });

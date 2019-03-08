@@ -27,4 +27,5 @@
 
 <script src="{{URL::asset('/resources/assets/admin/bootstrap/js/bootstrap-notify.min.js')}}"></script>
 <script src="{{URL::asset('/resources/assets/admin/bootstrap/js/bootbox.js')}}"></script>
+<script src="{{URL::asset('resources/assets/admin/plugins/select2/select2.min.js')}}"></script>
 <script src="{{URL::asset('/resources/assets/custom/developer.js')}}"></script>
