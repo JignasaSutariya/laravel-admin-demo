@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'LetsNurture'),
+    'name' => env('APP_NAME', 'LaravelAdmin'),
 
     'short_name' => env('APP_SHORT_NAME', 'LN'),
 

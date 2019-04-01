@@ -20,12 +20,10 @@ State |
                             <div class="form-group {{ $errors->has('state_country') ? ' has-error' : '' }}">
                                 <label  class="col-sm-4 control-label" for="state_country">Country <span class="colorRed"> *</span></label>
                                 <div class="col-sm-8">
-                                    <input type="hidden" name="state_country" value="{{$country_id}}">
+                                    <input type="hidden" name="state_country" value="{{$country->country_id}}">
                                     <select id="state_country" class="form-control" disabled>
                                         <option></option>
-                                        @foreach ($countries as $country)
-                                            <option value="{{ $country->country_id }}" @if($country_id == $country->country_id) selected @endif>{{ $country->name }}</option>
-                                        @endforeach
+                                        <option value="{{ $country->country_id }}" selected>{{ $country->name }}</option>
                                     </select>
                                     <div class="country-error"></div>
                                     @if ($errors->has('state_country'))
@@ -80,7 +78,7 @@ State |
                     <div class="box">
                         <!-- /.box-header -->
                         <div class="box-body">
-                            <table id="example1" class="table table-bordered table-striped">
+                            <table id="stateDatatable" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -139,13 +137,13 @@ State |
         var SITE_URL = "<?php echo URL::to('/'); ?>";
 
         $(function() {
-            $('#example1').DataTable({
+            $('#stateDatatable').DataTable({
                 stateSave: true,
                 "scrollX": false,
                 processing: true,
                 serverSide: true,
                 //searchDelay: 1000,
-                ajax: SITE_URL + "/admin/ajaxState/{{ $country_id }}",
+                ajax: SITE_URL + "/admin/ajaxState/{{ $country->country_id }}",
                 columns: [
                     {data: 'state_id', name: 'state_id'},
                     {data: 'name', name: 'name'},
@@ -173,8 +171,8 @@ State |
                         $.ajax({
                             url: SITE_URL + '/admin/state/delete/'+id,
                             success: function (data) {
-                                toastr.warning('Country Deleted !!');
-                                $('#example1').DataTable().ajax.reload(null, false);
+                                toastr.warning('State Deleted !!');
+                                $('#stateDatatable').DataTable().ajax.reload(null, false);
                             }
                         });
                     }

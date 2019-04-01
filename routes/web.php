@@ -65,13 +65,15 @@ Route::group(['middleware' => ['web']], function ()
             Route::get('/ajaxState/{id}', 'CountryController@ajaxState');
             Route::post('/state/new', 'CountryController@storeState');
             Route::get('/state/{id}/edit', 'CountryController@editState');
-            Route::post('/state/update', 'CountryController@updateState');
-            Route::get('/state/view/{id}', 'CountryController@getCity');
+            Route::patch('/state/{id}', 'CountryController@updateState');
             Route::get('/state/delete/{id}', 'CountryController@deleteState');
 
+            Route::get('/state/view/{id}', 'CountryController@getCity');
             Route::get('/ajaxCity/{id}', 'CountryController@ajaxCity');
-            Route::get('/city/delete/{id}', 'CountryController@deleteCity');
             Route::post('/city/new', 'CountryController@storeCity');
+            Route::get('/city/{id}/edit', 'CountryController@editCity');
+            Route::patch('/city/{id}', 'CountryController@updateCity');
+            Route::get('/city/delete/{id}', 'CountryController@deleteCity');
 
             //Category
             Route::resource('/categories', 'CategoryController');

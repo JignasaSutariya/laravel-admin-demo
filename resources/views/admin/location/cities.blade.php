@@ -13,49 +13,53 @@ City |
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">New Athlete</h4>
+                        <h4 class="modal-title" id="myModalLabel">New City</h4>
                     </div>
 
                     <div class="modal-body">
-                        <form class="form-horizontal" id="userForm" role="form" action="{{url('admin/city/new')}}" method="post">
+                        <form class="form-horizontal" id="cityForm" role="form" action="{{url('admin/city/new')}}" method="post">
                             {{ csrf_field() }}
-
-                            <div class="form-group {{ $errors->has('state_name') ? ' has-error' : '' }}">
-                                <label  class="col-sm-4 control-label" for="state_name">State Name <span class="colorRed"> *</span></label>
+                            <div class="form-group {{ $errors->has('city_country') ? ' has-error' : '' }}">
+                                <label  class="col-sm-4 control-label" for="city_country">Country <span class="colorRed"> *</span></label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="state_name" name="state_name" placeholder="State Name" value="{{old('state_name')}}"/>
-                                    @if ($errors->has('state_name'))
-                                    <span class="help-block alert alert-danger">
-                                        <strong>{{ $errors->first('city_name') }}</strong>
-                                    </span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="form-group {{ $errors->has('country') ? ' has-error' : '' }}">
-                                <label  class="col-sm-4 control-label" for="country">Country <span class="colorRed"> *</span></label>
-                                <div class="col-sm-8">
-                                    <select name="country" id="country" class="form-control">
-                                        <option selected disabled>Select Country</option>
-                                        @foreach ($countries as $country)
-                                            <option value="{{ $country->country_id }}">{{ $country->name }}</option>
-                                        @endforeach
+                                    <input type="hidden" name="city_country" value="{{ $country->country_id }}">
+                                    <select id="city_country" class="form-control" disabled>
+                                        <option></option>
+                                        <option value="{{ $country->country_id }}" selected>{{ $country->name }}</option>
                                     </select>
-                                    @if ($errors->has('country'))
+                                    <div class="country-error"></div>
+                                    @if ($errors->has('city_country'))
                                     <span class="help-block alert alert-danger">
-                                        <strong>{{ $errors->first('country') }}</strong>
+                                        <strong>{{ $errors->first('city_country') }}</strong>
                                     </span>
                                     @endif
                                 </div>
                             </div>
 
-                            <div class="form-group {{ $errors->has('state') ? ' has-error' : '' }}">
-                                <label  class="col-sm-4 control-label" for="state">State <span class="colorRed"> *</span></label>
+                            <div class="form-group {{ $errors->has('city_state') ? ' has-error' : '' }}">
+                                <label  class="col-sm-4 control-label" for="city_state">State <span class="colorRed"> *</span></label>
                                 <div class="col-sm-8">
-                                    <select name="state" id="state" class="form-control"></select>
-                                    @if ($errors->has('state'))
+                                    <input type="hidden" name="city_state" value="{{ $state->state_id }}">
+                                    <select id="city_state" class="form-control" disabled>
+                                        <option></option>
+                                        <option value="{{ $state->state_id }}" selected>{{ $state->name }}</option>
+                                    </select>
+                                    <div class="state-error"></div>
+                                    @if ($errors->has('city_state'))
+                                    <span class="help-block alert alert-danger">
+                                        <strong>{{ $errors->first('city_state') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="form-group {{ $errors->has('city_name') ? ' has-error' : '' }}">
+                                <label  class="col-sm-4 control-label" for="city_name">City <span class="colorRed"> *</span></label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="city_name" name="city_name" placeholder="City Name" value="{{old('city_name')}}"/>
+                                    @if ($errors->has('city_name'))
                                         <span class="help-block alert alert-danger">
-                                            <strong>{{ $errors->first('state') }}</strong>
+                                            <strong>{{ $errors->first('city_name') }}</strong>
                                         </span>
                                     @endif
                                 </div>
@@ -64,7 +68,7 @@ City |
                             <span class="help-block"> <span class="colorRed"> *</span> mentioned fields are mandatory.</span>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="submit" id="createBtn" class="btn btn-info pull-right">Create</button>
+                                <button type="submit" id="cityCreateBtn" class="btn btn-info pull-right">Create</button>
                             </div>
                         </form>
                     </div>
@@ -93,7 +97,7 @@ City |
                     <div class="box">
                         {{--  <!-- /.box-header -->  --}}
                         <div class="box-body">
-                            <table id="example1" class="table table-bordered table-striped">
+                            <table id="cityDatatable" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -148,8 +152,20 @@ City |
 
         var SITE_URL = "<?php echo URL::to('/'); ?>";
 
+        $(document).ready(function() {
+            $("#city_country").select2({
+                placeholder: "Select a Country",
+                allowClear: true,
+            });
+
+            $("#city_state").select2({
+                placeholder: "Select a State",
+                allowClear: true,
+            });
+        });
+
         $(function() {
-            $('#example1').DataTable({
+            $('#cityDatatable').DataTable({
                 stateSave: true,
                 "scrollX": false,
                 processing: true,
@@ -197,24 +213,93 @@ City |
             });
         });
 
-        $('#country').on('change', function() {
-            var country_id = $('#country').val();
+        $('#city_country').on('change', function(){
 
-            $.ajaxSetup({
+            var id = $('#city_country').val();
+
+            $.ajax({
+                type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $.ajax({
-                type :'POST',
-                data : {
-                    id:country_id
                 },
-                url  : SITE_URL+'/getState',
-                success  : function(response) {
-                    $('#state').html(response);
+                url: SITE_URL+'/getState',
+                data: {
+                    id
+                },
+                success: function(data) {
+                    $('#city_state').html(data);
                 }
             });
+        });
+
+        function deleteConfirm(id){
+            bootbox.confirm({
+            message: "<p class='text-red'>Are you sure you want to delete ?</p>",
+                buttons: {
+                    'cancel': {
+                        label: 'No',
+                        className: 'btn-danger'
+                    },
+                    'confirm': {
+                        label: 'Yes',
+                        className: 'btn-success'
+                    }
+                },
+                callback: function(result){
+                    if (result){
+                        $.ajax({
+                            url: SITE_URL + '/admin/city/delete/'+id,
+                            success: function (data) {
+                                toastr.warning('City Deleted !!');
+                                $('#cityDatatable').DataTable().ajax.reload(null, false);
+                            }
+                        });
+                    }
+                }
+            })
+        }
+
+        $(document.body).on('click', "#cityCreateBtn", function(){
+            if ($("#cityForm").length){
+                $("#cityForm").validate({
+                    errorElement: 'span',
+                    errorClass: 'text-red',
+                    ignore: [],
+                    rules: {
+                        "city_country":{
+                            required:true,
+                        },
+                        "city_state":{
+                            required:true,
+                        },
+                        "city_name":{
+                            required:true,
+                            minlength: 2,
+                            maxlength: 20
+                        }
+                    },
+                    messages: {
+                        "city_country":{
+                            required:"@lang('messages.country_state_city.cityCountry')",
+                        },
+                        "city_state":{
+                            required:"@lang('messages.country_state_city.cityState')",
+                        },
+                        "city_name":{
+                            required:"@lang('messages.country_state_city.cityName')",
+                        }
+                    },
+                    errorPlacement: function(error, element) {
+                        if(element.attr("name") == 'city_country'){
+                            element.closest('.form-group ').find(".country-error").html(error);
+                        } else if(element.attr("name") == 'city_state'){
+                            element.closest('.form-group ').find(".state-error").html(error);
+                        } else {
+                            error.insertAfter(element.closest(".form-control"));
+                        }
+                    },
+                });
+            }
         });
 
     </script>

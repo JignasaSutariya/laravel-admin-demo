@@ -1,5 +1,5 @@
 @section('title')
-Edit Country |
+Edit State |
 @endsection
 @section('css')
 <link rel="stylesheet" href="{{ URL::asset('/resources/assets/admin/plugins/lightbox2-master/dist/css/lightbox.css')}}">
@@ -8,10 +8,10 @@ Edit Country |
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>Edit Country</h1>
+        <h1>Edit State</h1>
         <ol class="breadcrumb">
-            <li><a href="{{url('admin/countries')}}"><i class="fa fa-dashboard"></i> Country</a></li>
-            <li class="active">Edit Country</li>
+            <li><a href="{{url('admin/countries/')}}/{{ $country->country_id }}"><i class="fa fa-dashboard"></i> State</a></li>
+            <li class="active">Edit State</li>
         </ol>
     </section>
     <!-- Main content -->
@@ -22,40 +22,35 @@ Edit Country |
                 <div class="box ">
                     <!-- /.box-header -->
                     <!-- form start -->
-                    <form class="form-horizontal" id="editCountryForm" action="{{url('admin/countries/'.$country->country_id)}}" method="post" enctype="multipart/form-data">
+                    <form class="form-horizontal" id="editStateForm" action="{{url('admin/state/'.$state->state_id)}}" method="post" enctype="multipart/form-data">
                     <div class="col-sm-8">
                             {{ csrf_field() }}
                             {{ method_field('PATCH') }}
                             <div class="box-body">
-                                <div class="form-group {{ $errors->has('short_code') ? ' has-error' : '' }}">
-                                    <label  class="col-sm-4 control-label" for="short_code">Short Code <span class="colorRed"> *</span></label>
-                                    <div class="col-sm-8 jointbox">
-                                        <input type="type" class="form-control" name="short_code" maxlength="2" placeholder="Short Code" value="@if(!empty(old('short_code'))){{old('short_code')}}@else{{$country->sortname}}@endif"/>
-                                        @if ($errors->has('short_code'))
+                                <div class="form-group {{ $errors->has('state_country') ? ' has-error' : '' }}">
+                                    <label  class="col-sm-4 control-label" for="state_country">Country <span class="colorRed"> *</span></label>
+                                    <div class="col-sm-8">
+                                        <input type="hidden" name="state_country" value="{{$state->country_id}}">
+                                        <select id="state_country" class="form-control" disabled>
+                                            <option></option>
+                                            <option value="{{ $country->country_id }}" selected>{{ $country->name }}</option>
+                                        </select>
+                                        <div class="country-error"></div>
+                                        @if ($errors->has('state_country'))
                                         <span class="help-block alert alert-danger">
-                                            <strong>{{ $errors->first('short_code') }}</strong>
+                                            <strong>{{ $errors->first('state_country') }}</strong>
                                         </span>
                                         @endif
                                     </div>
                                 </div>
-                                <div class="form-group {{ $errors->has('country_name') ? ' has-error' : '' }}">
-                                    <label  class="col-sm-4 control-label" for="country_name" >Country Name <span class="colorRed"> *</span></label>
-                                    <div class="col-sm-8 jointbox">
-                                        <input type="type" class="form-control" name="country_name" placeholder="Country Name" value="@if(!empty(old('country_name'))){{old('country_name')}}@else{{$country->name}}@endif"/>
-                                        @if ($errors->has('country_name'))
+
+                                <div class="form-group {{ $errors->has('state_name') ? ' has-error' : '' }}">
+                                    <label  class="col-sm-4 control-label" for="state_name">State Name <span class="colorRed"> *</span></label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="state_name" name="state_name" placeholder="State Name" value="@if(!empty(old('state_name'))){{old('state_name')}}@else{{$state->name}}@endif"/>
+                                        @if ($errors->has('state_name'))
                                         <span class="help-block alert alert-danger">
-                                            <strong>{{ $errors->first('country_name') }}</strong>
-                                        </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-group {{ $errors->has('phonecode') ? ' has-error' : '' }}">
-                                    <label  class="col-sm-4 control-label" for="phonecode">Phonecode<span class="colorRed"> *</span></label>
-                                    <div class="col-sm-8 jointbox">
-                                        <input type="number" class="form-control" placeholder="Phonecode" name="phonecode" max="500000" value="@if(!empty(old('phonecode'))){{old('phonecode')}}@else{{$country->phonecode}}@endif"/>
-                                        @if ($errors->has('phonecode'))
-                                        <span class="help-block alert alert-danger">
-                                            <strong>{{ $errors->first('phonecode') }}</strong>
+                                            <strong>{{ $errors->first('state_name') }}</strong>
                                         </span>
                                         @endif
                                     </div>
@@ -65,7 +60,7 @@ Edit Country |
                             <!-- /.box-body -->
                             <div class="box-footer">
                                 <button type="button" class="btn btn-default" id="cancelBtn">Back</button>
-                                <button type="submit" id="updateCountryBtn" class="btn btn-info pull-right">Update</button>
+                                <button type="submit" id="updateStateBtn" class="btn btn-info pull-right">Update</button>
                             </div>
                             <!-- /.box-footer -->
 
@@ -106,44 +101,25 @@ Edit Country |
     <script src="{{URL::asset('resources/assets/custom/jQuery-validation-plugin/additional-methods.js')}}"></script>
     <script>
         $("#cancelBtn").click(function () {
-            window.location.href = "{{url('admin/countries')}}";
+            window.location.href = "{{url('admin/state')}}";
         });
 
-        $(document.body).on('click', "#updateCountryBtn", function(){
-
-            if ($("#editCountryForm").length){
-                $("#editCountryForm").validate({
+        $(document.body).on('click', "#updateStateBtn", function(){
+            if ($("#editStateForm").length){
+                $("#editStateForm").validate({
                     errorElement: 'span',
                     errorClass: 'text-red',
                     ignore: [],
                     rules: {
-                        "short_code":{
+                        "state_name":{
                             required:true,
                             minlength: 2,
                             maxlength: 20
-                        },
-                        "country_name":{
-                            required:true,
-                            minlength: 2,
-                            maxlength: 20
-                        },
-                        "phonecode":{
-                            required:true,
-                            number:true,
-                            min:1,
-                            minlength:1,
-                            maxlength:5
                         },
                     },
                     messages: {
-                        "short_code":{
-                            required:"@lang('messages.country_state_city.shortCode')",
-                        },
-                        "country_name":{
-                            required:"@lang('messages.country_state_city.countryName')",
-                        },
-                        "phonecode":{
-                            required:"@lang('messages.country_state_city.phoneCode')",
+                        "state_name":{
+                            required:"@lang('messages.country_state_city.stateName')",
                         },
                     },
                     errorPlacement: function(error, element) {
@@ -184,7 +160,7 @@ Edit Country |
             $('#state').html('');
             $('#city').html('');
             var id = $('#country').val();
-            var state = {{ !empty($country->state) ? $country->state: 'null' }};
+            var state = {{ !empty($state->state) ? $state->state: 'null' }};
             $.ajax({
                 type: 'POST',
                 headers: {
@@ -204,7 +180,7 @@ Edit Country |
         $('#state').on('change', function(){
             $('#city').html('');
             var id = $('#state').val();
-            var city = {{ (!empty($country->city)) ? $country->city: 'null' }};
+            var city = {{ (!empty($state->city)) ? $state->city: 'null' }};
             $.ajax({
                 type: 'POST',
                 headers: {

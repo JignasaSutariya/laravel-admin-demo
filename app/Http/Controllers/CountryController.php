@@ -15,13 +15,12 @@ class CountryController extends Controller
 {
     //Country CRUD
     public function index() {
-        $countries = Country::all();
-        $states = State::all();
-        return view('admin.location.countries')->with(compact('countries', 'states'));
+        $countries = Country::where('status','1')->get();
+        return view('admin.location.countries')->with(compact('countries'));
     }
 
     public function ajaxCountry() {
-        $countries = Country::all();
+        $countries = Country::where('status','1')->get();
         return Datatables::of($countries)
         ->addColumn('action', function ($countries) {
         return '<a class="label label-primary" href="' . url('admin/countries/'.$countries->country_id) . '"  title="View"><i class="fa fa-eye"></i>&nbsp</a>
@@ -104,8 +103,8 @@ class CountryController extends Controller
     }
 
     public function show($country_id) {
-        $countries = Country::all();
-        return view('admin.location.states')->with(compact('country_id', 'countries'));
+        $country = Country::findOrFail($country_id);
+        return view('admin.location.states')->with(compact('country'));
     }
 
     public function destroy(Request $request) {
@@ -123,11 +122,11 @@ class CountryController extends Controller
 
     // State CRUD
     public function ajaxState($id) {
-      $states = State::where('country_id', $id)->get();
+      $states = State::where('country_id', $id)->where('status','1')->get();
 
       return Datatables::of($states)
       ->addColumn('action', function ($states) {
-        return '<a class="label label-primary" href="' . url('admin/state/view', ['id' => $states->state_id]) . '"  title="View / Update"><i class="fa fa-eye"></i>&nbsp</a>
+        return '<a class="label label-primary" href="' . url('admin/state/view', ['id' => $states->state_id]) . '"  title="View"><i class="fa fa-eye"></i>&nbsp</a>
         <a class="label label-success" href="' . url('admin/state/'.$states->state_id.'/edit') . '"  title="Update"><i class="fa fa-edit"></i>&nbsp</a>
         <a class="label label-danger" href="javascript:;"  title="Delete" onclick="deleteConfirm('.$states->state_id.')"><i class="fa fa-trash"></i>&nbsp</a>';
       })
@@ -173,7 +172,8 @@ class CountryController extends Controller
 
     public function editState($id) {
         $state = State::findOrFail($id);
-        return view('admin.location.editState')->with(compact('state'));
+        $country = Country::findOrFail($state->country_id);
+        return view('admin.location.editState')->with(compact('state', 'country'));
     }
 
     public function updateState(Request $request, $id){
@@ -219,43 +219,30 @@ class CountryController extends Controller
       return '1';
     }
 
-    public function getCity($id) {
-        $state = State::where('state_id', $id)->first();
-        $countries = Country::all();
-        return view('admin.location.cities', ['state' => $state, 'countries' => $countries]);
+    // City CRUD
+    public function getCity($state_id) {
+        $state = State::findOrFail($state_id);
+        $country =  Country::findOrFail($state->country_id);
+        return view('admin.location.cities')->with(compact('country', 'state'));
       }
 
-    // City CRUD
     public function ajaxCity($id) {
-        $cities = City::where('state_id', $id)->get();
+        $cities = City::where('state_id', $id)->where('status','1')->get();
 
         return Datatables::of($cities)
-        ->addColumn('action', function ($cities) {
-          return '<a class="label label-danger" href="javascript:;"  title="Delete" onclick="deleteConfirm('.$cities->city_id.')"><i class="fa fa-trash"></i>&nbsp</a>';
-        })
         ->addColumn('country', function ($city) {
           return $city->state->country->name;
         })
         ->addColumn('state', function ($city) {
           return $city->state->name;
         })
-        // ->addColumn('status', function ($cities) {
-        //     if ($cities->status=='1'){
-        //         return'<a class="text-green actStatus status1" data-sid="'.$cities->city_id.'" id="state'.$cities->city_id.'">Active</a>';
-        //     }
-        //     elseif ($cities->status=='0') {
-        //         return '<a class="text-danger actStatus status1" data-sid="'.$cities->city_id.'" id="state'.$cities->city_id.'">Deactive</a>';
-        //     }
-        // })
+        ->addColumn('action', function ($cities) {
+          return '<a class="label label-success" href="' . url('admin/city/'.$cities->city_id.'/edit') . '"  title="Update"><i class="fa fa-edit"></i>&nbsp</a>
+          <a class="label label-danger" href="javascript:;"  title="Delete" onclick="deleteConfirm('.$cities->city_id.')"><i class="fa fa-trash"></i>&nbsp</a>';
+        })
         ->rawColumns(['action'])
         ->make(true);
     }
-
-    public function deleteCity(Request $request) {
-        City::find($request->id)->delete();
-
-        return '1';
-      }
 
     public function storeCity(Request $request) {
         $rules = [
@@ -290,6 +277,54 @@ class CountryController extends Controller
             }
         }
     }
+
+    public function editCity($id) {
+        $city = City::findOrFail($id);
+        $state = State::findOrFail($city->state_id);
+        $country =  Country::findOrFail($state->country_id);
+        return view('admin.location.editCity')->with(compact('country', 'state', 'city'));
+    }
+
+    public function updateCity(Request $request, $id){
+        // dd($request->city_country);
+        $rules = [
+            'city_name' => 'required',
+            'city_country' => 'required|exists:countries,country_id',
+            'city_state' => 'required|exists:states,state_id'
+        ];
+
+        $messages = [
+            'city_country.required' => 'Please select a Country.',
+            'city_state.required' => 'Please select a State.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if($validator->fails()) {
+          return redirect()->back()
+          ->withErrors($validator)
+          ->withInput();
+        } else {
+          $state = City::find($id);
+          $state->name = $request->city_name;
+          $state->status = '1';
+        }
+        if ($state->save()) {
+            Session::flash('message', 'City Updated Succesfully !');
+            Session::flash('alert-class', 'success');
+            return redirect('admin/state/view/'.$request->city_state);
+        } else {
+            Session::flash('message', 'Oops !! Something went wrong!');
+            Session::flash('alert-class', 'error');
+            return redirect()->back();
+        }
+    }
+
+    public function deleteCity(Request $request) {
+        City::find($request->id)->delete();
+
+        return '1';
+      }
 
     public function getCountry(Request $request){
       $countries = Country::where('status', '1')->get()->toArray();

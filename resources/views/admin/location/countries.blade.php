@@ -216,7 +216,7 @@ Country |
                     <div class="box">
                         <!-- /.box-header -->
                         <div class="box-body">
-                            <table id="example1" class="table table-bordered table-striped">
+                            <table id="countryDatatable" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -322,7 +322,7 @@ Country |
         });
 
         $(function() {
-            $('#example1').DataTable({
+            $('#countryDatatable').DataTable({
                 stateSave: true,
                 "scrollX": false,
                 processing: true,
@@ -479,7 +479,7 @@ Country |
                             url: SITE_URL + '/admin/country/delete/'+id,
                             success: function (data) {
                                 toastr.warning('Country Deleted !!');
-                                $('#example1').DataTable().ajax.reload(null, false);
+                                $('#countryDatatable').DataTable().ajax.reload(null, false);
                             }
                         });
                     }
